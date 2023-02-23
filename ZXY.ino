@@ -37,33 +37,35 @@ extern struct rst_info resetInfo;
 #define PASS_LEN 64 //Größe PASS
 
 
-const uint16_t EA_SID = 0;				//0 - SID
-const uint16_t EA_PAS = EA_SID + SSID_LEN;		//34 - PAS
-const uint16_t EA_RESET = EA_PAS + PASS_LEN;		//флаг сброса настроек EEPROM
-const uint16_t EA_ID = EA_RESET + 1;			//ID устройства
-const uint16_t EA_NMOD = EA_ID + ID_LEN;		//режим работы точка, клиент, DHCP
-const uint16_t EA_BAUD = EA_NMOD + 1;			//скорость шины UART 2400, 4800, 9600, 19200
-const uint16_t EA_ADDR = EA_BAUD + 1;			//адрес шины UART
-const uint16_t EA_MPT = EA_ADDR + 2;			//порт MQTT сервера
-const uint16_t EA_SCR = EA_MPT + 2;			//скрипт сервера
-const uint16_t EA_EIP = EA_SCR + ETH_LEN;       //ESP IP
-const uint16_t EA_MSK = EA_EIP + IP_SIZE;       //маска
-const uint16_t EA_GW = EA_MSK + IP_SIZE;        //шлюз
-const uint16_t EA_DNS = EA_GW + IP_SIZE;        //DNS_1, нужен ли второй?
-const uint16_t EA_ALL = EA_DNS + IP_SIZE;       //максимальный адрес EEPROM
+const uint16_t EA_SID = 0; //0 - SID
+const uint16_t EA_PAS = EA_SID + SSID_LEN; //34 - PAS
+const uint16_t EA_RESET = EA_PAS + PASS_LEN; //Auswahl EEPROM-Reset-Flag
+const uint16_t EA_ID = EA_RESET + 1; //ID Gerät
+const uint16_t EA_NMOD = EA_ID + ID_LEN; //Betriebsart Punkt, Client, DHCP
+const uint16_t EA_BAUD = EA_NMOD + 1; //UART-Busgeschwindigkeit 2400, 4800, 9600, 19200
+const uint16_t EA_ADDR = EA_BAUD + 1; // UART-Bus-Adresse
+const uint16_t EA_MPT = EA_ADDR + 2; //MQTT-Server-Anschluss
+const uint16_t EA_SCR = EA_MPT + 2; //Skript-Server
+const uint16_t EA_EIP = EA_SCR + ETH_LEN; //ESP IP
+konst uint16_t EA_MSK = EA_EIP + IP_SIZE; //Maske
+konst uint16_t EA_GW = EA_MSK + IP_SIZE; //Gateway
+const uint16_t EA_DNS = EA_GW + IP_SIZE; //DNS_1, wird der zweite benötigt?
+const uint16_t EA_ALL = EA_DNS + IP_SIZE; // maximale EEPROM-Adresse
 
 
-//служебные переменные
-boolean dhcp;           					//DHCP, on-off
-#define debounceDelay 30      					//время ожидания установки состояния кнопки  
 
-boolean rebootReq = false;      				//флаг для перезагрузки ESP
-boolean resetFlag = false;      				//флаг для сброса настроек SSID
-byte resetDurationCounter;      				//определяет длительность нажатия кнопки
-unsigned long timeResetPoint;   				//точка подсчета секунд нажатия кнопки сброса
-boolean apMode = false;						//флаг режима работы AP
-boolean highMillis = false;					//флаг переполнения значения millis(); для подсчета uptime
-byte rollOver = 0;          					//количество 50-ков дней при переполнении millis();
+//Dienstvariablen
+boolean dhcp; //DHCP, ein-aus
+#define debounceDelay 30 //Wartezeit für Tastenstatuseinstellung  
+
+boolean rebootReq = false; //Flag für ESP-Reset
+boolean resetFlag = false; //Flag zum Zurücksetzen der SSID-Einstellungen
+byte resetDurationCounter; //Bestimmt, wie lange die Taste gedrückt wurde
+unsigned long timeResetPoint; //der Sekunden-Zählpunkt der Reset-Taste
+boolean apMode = false; //das Flag für den AP-Betriebsmodus
+boolean highMillis = false; //Flag Überlaufwert millis(); für die Berechnung der Betriebszeit
+byte rollOver = 0; //insgesamt 50 Tage, wenn millis() überläuft;
+
 
 
 
