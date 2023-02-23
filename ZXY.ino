@@ -28,13 +28,13 @@ extern struct rst_info resetInfo;
 #include <ESP8266HTTPUpdateServer.h>	//UpdateServer
 #endif
 
-#define RESET_PIN 5				//порт для сброса настроек
-#define _durationResetPull 6			//длительность нажатия кнопки для сброса настроек в секундах 
-#define IP_SIZE 4				//октеты IP адресов
-#define ETH_LEN 25				//размер команды EthAct после IP
-#define ID_LEN 6				//размер ID
-#define SSID_LEN 34				//размер SSID
-#define PASS_LEN 64				//размер PASS
+#define RESET_PIN 5 //Anschluss für Rückstellung
+#define _durationResetPull 6 //Dauer des Tastendrucks zum Zurücksetzen in Sekunden 
+#define IP_SIZE 4 //Oktette der IP-Adressen
+#define ETH_LEN 25 //Größe des EthAct-Befehls nach IP
+#define ID_LEN 6 //Größe ID
+#define SSID_LEN 34 //Größe SSID
+#define PASS_LEN 64 //Größe PASS
 
 
 const uint16_t EA_SID = 0;				//0 - SID
@@ -67,54 +67,54 @@ byte rollOver = 0;          					//количество 50-ков дней пр�
 
 
 
-// конанды чтения данных:
-// Aa - модель устройства,
-// Aru - запрос напряжения,
-// Ari - запрос тока,
-// Arc - запрос состояния контроля (ток/напряжение)
-// Aro - запрос состояния выхода.
-// Ara - запрос потреблённой энергии AH
+// Datenlesekonzepte:
+// Aa - Gerätemodell,
+// Aru - Spannungsabfrage,
+// Ari - Stromabfrage,
+// Arc - Abfrage des Kontrollstatus (Strom/Spannung)
+// Aro - Abfrage des Ausgangsstatus.
+// Ara Energieabfrage AH
 
-// команды управления
-// Aso0/Aso1 - OUTPUT выкл/вкл
-// AsuXXXXX - установка значения напряжения
-// AsiXXXX - установка значения тока
-// Asa0 - сброс значения AH
+// Steuerbefehle
+// Aso0/Aso1 - OUTPUT ein/aus
+// AsuXXXXX - Einstellung des Spannungswertes
+// AsiXXXXX - Stromwerteinstellung
+// Asa0 - AH-Wert zurücksetzen-
 
-//переменные для ZXY
+//Variablen for ZXY
 #define commandCount 12
 #define addr "A"
-#define xA 0		//0 - модель устройства
-#define xSU 1		//1 - передать напряжение + значение
-#define xSI 2		//2 - передать ток + значение
-#define xSO 3		//3 - управление выходом + 1/0
-#define xSA 4		//4 - сброс потреблённых AH
-#define xRU 5		//5 - читать напряжение
-#define xRI 6		//6 - читать ток
-#define xRO 7		//7 - читать состояние выхода
-#define xRC 8		//8 - читать контроль выхода
-#define xRA 9		//9 - читать потреблённый AH
-#define xRT 10		//10 - читать температуру
+#define xA 0 //0 - Gerätemodell
+#define xSU 1 //1 - Übertragungsspannung + Wert
+#define xSI 2 //2 - Sendestrom + Wert
+#define xSO 3 //3 - Ausgangssteuerung + 1/0
+#define xSA 4 //4 - Reset AH verbraucht
+#define xRU 5 //5 - Spannung lesen
+#define xRI 6 //6 - Strom lesen
+#define xRO 7 //7 - Ausgangsstatus lesen
+#define xRC 8 //8 - Ausgangssteuerung lesen
+#define xRA 9 //9 - AH-Verbrauch lesen
+#define xRT 10 //10 - Temperatur lesen
 
-String cmdval[commandCount];			//масив команд ZXY
-boolean cmdflag[commandCount];			//флаг передачи команды
-String returnval[commandCount];			//буфер принятых данных от ZXY
+String cmdval[commandCount]; //Array der ZXY-Befehle
+boolean cmdflag[commandCount]; //Kennzeichen für Befehlsübertragung
+String returnval[commandCount]; //Empfang des Datenpuffers von ZXY
 String XML;
 String AJAX;
 
-uint8_t zxyBAUD;						//скорость UART
-String zxyADDR;							//адрес UART
+uint8_t zxyBAUD; //UART-Geschwindigkeit
+String zxyADDR; //Adresse des UART
 
-uint16_t curU;							//текущее значение напряжения
-uint16_t curI;							//текущее значение тока
-uint16_t curAH;							//текущее значение потреблённой энергии
+uint16_t curU; //Stromwert der Spannung
+uint16_t curI; //aktueller Wert des Stroms
+uint16_t curAH; //Aktueller Wert der verbrauchten Energie
 
 float setU;
 float setI;
 
-unsigned long timeBusy; 				//период опроса
-boolean busy;						//флаг занятости шины
-uint8_t cmdnum;						//номер команды
+unsigned long timeBusy; //Abfragezeitraum
+boolean busy; //boolesches Busy-Flag
+uint8_t cmdnum; //Befehlsnummer
 
 // шапка HTML страницы
 const char PAGE_Head[] PROGMEM = "<html><head><title>ZXY6000S</title></head><body><meta name=\"viewport\" content=\"width=device-width\">";
@@ -759,17 +759,17 @@ void setup(void) {
 	cmdval[xRT] = zxyADDR + "rt";
 	cmdflag[xRT] = true;
 	
-// #define xA 0		//0 - модель устройства
-// #define xSU 1		//1 - передать напряжение + значение
-// #define xSI 2		//2 - передать ток + значение
-// #define xSO 3		//3 - управление выходом + 1/0
-// #define xSA 4		//4 - сброс потреблённых AH
-// #define xRU 5		//5 - читать напряжение
-// #define xRI 6		//6 - читать ток
-// #define xRO 7		//7 - читать состояние выхода
-// #define xRC 8		//8 - читать контроль выхода
-// #define xRA 9		//9 - читать потреблённый AH
-// #define xRT 10		//10 - читать температуру
+// #define xA 0 //0 - Gerätemodell
+// #define xSU 1 //1 - Übertragungsspannung + Wert
+// #define xSI 2 //2 - Sendestrom + Wert
+// #define xSO 3 //3 - Ausgangssteuerung + 1/0
+// #define xSA 4 //4 - Reset AH verbraucht
+// #define xRU 5 //5 - Spannung lesen
+// #define xRI 6 //6 - Strom lesen
+// #define xRO 7 //7 - Ausgangsstatus lesen
+// #define xRC 8 //8 - Ausgangssteuerung lesen
+// #define xRA 9 //9 - Lesen von AH verbraucht
+// #define xRT 10 //10 - Temperatur lesen
 	
 	
 	len_ee = EEPROM.read(EA_SID);
